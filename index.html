@@ -1,35 +1,77 @@
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HanoiTower</title>
-</head>
-<body>
+  <title>1A2B</title>
+  <script>
+    // 產生一個隨機的四位數字
+    function generateRandomNumber() {
+      let numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9'];
+      let randomNum = '';
 
-        <h2>盒內塔運行結果</h2>
-        <div>
-            請輸入盤數：<input type="number" id="num" min="2">
-            <button id="send" onclick="main()">運行</button></div>
+      for (let i = 0; i < 4; i++) {
+        const randomIndex = Math.floor(Math.random() * numbers.length);
+        randomNum += numbers[randomIndex];
+        numbers.splice(randomIndex, 1);
+      }
 
-    <script>
-    function hanoiTower(dishs, peg1, peg2, peg3) {
-        if (dishs === 1) {
-          document.write("盤子從 " + peg1 + " 移到 " + peg3);
-          document.write("<p>");
-        } else {
-          hanoiTower(dishs - 1, peg1, peg3, peg2);
-          document.write("盤子從 " + peg1 + " 移到 " + peg3);
-          document.write("<p>");
-          hanoiTower(dishs - 1, peg2, peg1, peg3);
+      return randomNum;
+    }
+
+    // 計算使用者猜測的結果
+    function calculateResult(secretNum, guess) {
+      let a = 0; // 正確數字且正確位置的數量（A）
+      let b = 0; // 正確數字但錯誤位置的數量（B）
+
+      for (let i = 0; i < 4; i++) {
+        if (guess[i] === secretNum[i]) {
+          a++;
+        } else if (secretNum.includes(guess[i])) {
+          b++;
         }
       }
-      
-      function main() {
-        const n = document.getElementById("num").value;
-        if(n >= 2) 
-            hanoiTower(n, 1, 2, 3);
+
+      return [a, b];
+    }
+
+    let secretNumber;
+    let attempts = 0;
+
+    function startGame() {
+      secretNumber = generateRandomNumber(); // 產生隨機數字
+      attempts = 0;
+      document.getElementById('result').innerHTML = '';
+    }
+
+    function playGame() {
+      const guess = document.getElementById('guess').value;
+      document.getElementById('guess').value = '';
+
+      attempts++;
+      const result = calculateResult(secretNumber, guess);
+
+      const resultText = `結果：${result[0]}A${result[1]}B<br>`;
+      document.getElementById('result').innerHTML += resultText;
+
+      if (result[0] === 4) {
+        const successText = `恭喜你猜對了！答案是 ${secretNumber}。<br>`;
+        const attemptsText = `你總共使用了 ${attempts} 次猜測。<br>`;
+        document.getElementById('result').innerHTML += successText + attemptsText;
       }
-      </script>
+    }
+  </script>
+</head>
+<body>
+  <h1>1A2B 遊戲</h1>
+  <p>猜測一個四位數字，數字及位置完全正確則得到一個 A，數字正確但位置不正確則得到一個 B。</p>
+  <p>準備好了嗎？開始猜吧！</p>
+
+  <button onclick="startGame()">開始遊戲</button>
+  <br><br>
+
+  <input type="text" id="guess" placeholder="輸入你的猜測">
+  <button onclick="playGame()">猜測</button>
+  <br><br>
+
+  <div id="result"></div>
 </body>
 </html>
